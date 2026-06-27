@@ -8,100 +8,151 @@
 
 ## Directory Overview
 
-Each module contains its own dedicated `testbench` folder with a Questasim compilation script (`run.do`) and waveform layout configurations (`wave.do`). The modules are packaged with local copies of dependencies to maintain absolute isolation.
+```
+UART/
+├── UART_TX/               ← RTL source files for the Transmitter
+│   ├── testbench/         ← TX testbench (UART_TX_tb.sv, run.do, sourcefile.txt, wave.do)
+│   └── *.v
+├── UART_RX/               ← RTL source files for the Receiver
+│   ├── testbench/         ← RX testbench (UART_RX_tb.sv, run.do, sourcefile.txt, wave.do)
+│   └── *.v
+└── UART_TOP/              ← RTL top-level integration (UART.v)
+    └── testbench/         ← TOP testbench (UART_tb.v, run.do, sourcefile.txt, wave.do)
+```
 
-* **[UART_RX](./UART_RX):** Contains the UART Receiver design. Its testbench utilizes a local copy of helper TX components located inside its own testbench directory.
-* **[UART_TX](./UART_TX):** Contains the UART Transmitter design. It compiles its files locally in the testbench directory.
-* **[UART_TOP](./UART_TOP):** Integrates the UART RX and TX blocks. Its testbench uses local copies of RX and TX design files nested inside its own testbench directory.
-
----
-
-## How to Run Simulations on Questasim
-
-You can run the simulation using either the **Questasim Graphical User Interface (GUI)** or the **Command Line (CLI)**.
-
-### Method 1: Using the Questasim GUI (Recommended)
-
-1. **Launch Questasim / ModelSim**.
-2. Locate the **Transcript / Command Console** window at the bottom of the interface.
-3. Change the active directory to the specific testbench directory you want to run (relative to the repository root):
-   * **To run RX Testbench:**
-     ```tcl
-     cd ./UART_RX/testbench
-     ```
-   * **To run TX Testbench:**
-     ```tcl
-     cd ./UART_TX/testbench
-     ```
-   * **To run TOP Testbench:**
-     ```tcl
-     cd ./UART_TOP/testbench
-     ```
-4. Run the DO script to compile design files, load the testbench, configure the wave viewer, and start the simulation:
-   ```tcl
-   do run.do
-   ```
+> [!NOTE]
+> All RTL `.v` files live **only** in their respective module folders (`UART_TX/`, `UART_RX/`, `UART_TOP/`).
+> The `testbench/` directories contain **only** testbench and simulation script files — no RTL copies.
 
 ---
 
-### Method 2: Using the Command Line (Terminal/PowerShell)
+## Understanding the Simulation Scripts
 
-If Questasim is added to your system's Environment Variables (`PATH`), you can launch the simulation directly from a terminal.
+Every `testbench/` folder contains two key files that work together to run the simulation:
 
-1. **Open your terminal** (PowerShell or Command Prompt).
-2. Change the directory to the desired testbench folder:
-   * **For UART Receiver (RX):**
-     ```powershell
-     cd ./UART_RX/testbench
-     ```
-   * **For UART Transmitter (TX):**
-     ```powershell
-     cd ./UART_TX/testbench
-     ```
-   * **For UART Top-Level Integration:**
-     ```powershell
-     cd ./UART_TOP/testbench
-     ```
-3. Run one of the following commands:
-   * **To run in GUI Mode (Opens Questasim GUI and runs the DO script automatically):**
-     ```powershell
-     vsim -do run.do
-     ```
-   * **To run in Batch/Command-Line Mode (Runs the simulation directly in the terminal without GUI):**
-     ```powershell
-     vsim -c -do run.do
-     ```
+### `sourcefile.txt` — The File List
+
+This is a plain-text list of every `.v` / `.sv` file that needs to be compiled for the simulation. Each line is a path to one source file, written **relative to the `testbench/` folder**.
+
+- A path starting with `../` means *"go up one level"* (into the module's own RTL folder).
+- A path starting with `../../` means *"go up two levels"* (into a sibling module's RTL folder).
+- A filename with no path prefix means the file sits directly inside the `testbench/` folder (i.e., the testbench file itself).
+
+**Example — `UART_TX/testbench/sourcefile.txt`:**
+```
+../UART_TX_FSM.v          ← RTL file from UART_TX/
+../UART_TX_MUX.v
+../UART_TX_parity_calc.v
+../UART_TX_P_DATA_REG.v
+../UART_TX_serializer.v
+../UART_TX_top.v
+UART_TX_tb.sv             ← Testbench file (lives here in testbench/)
+```
+
+**Example — `UART_RX/testbench/sourcefile.txt`:**
+```
+../UART_RX_data_sampling.v       ← RX RTL files from UART_RX/
+../UART_RX_deserializer.v
+../UART_RX_edge_bit_counter.v
+../UART_RX_FSM.v
+../UART_RX_parity_check.v
+../UART_RX_start_check.v
+../UART_RX_stop_check.v
+../UART_RX_top.v
+../../UART_TX/UART_TX_FSM.v      ← TX RTL files from UART_TX/ (needed by the RX TB)
+../../UART_TX/UART_TX_MUX.v
+../../UART_TX/UART_TX_parity_calc.v
+../../UART_TX/UART_TX_P_DATA_REG.v
+../../UART_TX/UART_TX_serializer.v
+../../UART_TX/UART_TX_top.v
+UART_RX_tb.sv                    ← Testbench file (lives here in testbench/)
+```
+
+> **To add or remove a design file from a simulation**, simply add or remove its path in `sourcefile.txt`. No other file needs to change.
 
 ---
 
-## Details of Each Testbench Script
+### `run.do` — The Simulation Script
 
-### 1. UART Receiver (`UART_RX`)
-* **Testbench File:** [UART_RX_tb.sv](./UART_RX/testbench/UART_RX_tb.sv)
-* **Execution Script:** [run.do](./UART_RX/testbench/run.do)
-* **What it does:**
-  1. Creates the `work` library.
-  2. Compiles helper TX source files from the nested `UART_TX` subdirectory.
-  3. Compiles design and testbench files listed in the local `sourcefile.txt`.
-  4. Loads the `UART_RX_tb` top module.
-  5. Executes `wave.do` and runs the simulation.
+This is a QuestaSim TCL script that runs the full simulation flow in one command. All three testbenches use the same structure:
 
-### 2. UART Transmitter (`UART_TX`)
-* **Testbench File:** [UART_TX_tb.sv](./UART_TX/testbench/UART_TX_tb.sv)
-* **Execution Script:** [run.do](./UART_TX/testbench/run.do)
-* **What it does:**
-  1. Creates the `work` library.
-  2. Compiles all design and testbench files locally.
-  3. Loads the `UART_TX_tb` top module.
-  4. Executes `wave.do` and runs the simulation.
+```tcl
+vlib  work                            ← Create the simulation library
+vlog  -f sourcefile.txt               ← Compile all files listed in sourcefile.txt
+vsim  -voptargs=+acc  work.<tb_name>  ← Load the top-level testbench module
+do    wave.do                         ← Set up the waveform viewer
+run   -all                            ← Run the simulation to completion
+```
 
-### 3. UART Top Level (`UART_TOP`)
-* **Testbench File:** [UART_tb.v](./UART_TOP/testbench/UART_tb.v)
-* **Execution Script:** [run.do](./UART_TOP/testbench/run.do)
-* **What it does:**
-  1. Creates the `work` library.
-  2. Compiles helper TX files from the nested `UART_TX` subdirectory.
-  3. Compiles helper RX files from the nested `UART_RX` subdirectory.
-  4. Compiles top-level files `UART.v` and `UART_tb.v`.
-  5. Loads the `UART_tb` top module.
-  6. Executes `wave.do` and runs the simulation.
+| Line | What it does |
+|------|-------------|
+| `vlib work` | Creates (or resets) the `work` compilation library |
+| `vlog -f sourcefile.txt` | Compiles every file listed in `sourcefile.txt` into `work` |
+| `vsim -voptargs=+acc work.<tb_name>` | Loads the compiled testbench top module into the simulator |
+| `do wave.do` | Applies the pre-configured waveform layout |
+| `run -all` | Starts the simulation and runs until it finishes |
+
+You never need to modify `run.do`. It is identical across all three testbenches — only the top module name (`UART_TX_tb`, `UART_RX_tb`, `UART_tb`) differs.
+
+---
+
+## Quick Run Commands
+
+> All commands below assume your current directory is `UART/`.
+
+### QuestaSim GUI — Transcript Commands
+
+Open QuestaSim, then paste into the **Transcript** window:
+
+**UART TX:**
+```tcl
+cd ./UART_TX/testbench; do run.do
+```
+
+**UART RX:**
+```tcl
+cd ./UART_RX/testbench; do run.do
+```
+
+**UART TOP:**
+```tcl
+cd ./UART_TOP/testbench; do run.do
+```
+
+---
+
+### Terminal — GUI Mode
+
+```powershell
+# TX
+cd ./UART_TX/testbench; vsim -do run.do; cd ../../
+
+# RX
+cd ./UART_RX/testbench; vsim -do run.do; cd ../../
+
+# TOP
+cd ./UART_TOP/testbench; vsim -do run.do; cd ../../
+```
+
+### Terminal — Batch Mode (No GUI)
+
+```powershell
+# TX
+cd ./UART_TX/testbench; vsim -c -do run.do; cd ../../
+
+# RX
+cd ./UART_RX/testbench; vsim -c -do run.do; cd ../../
+
+# TOP
+cd ./UART_TOP/testbench; vsim -c -do run.do; cd ../../
+```
+
+---
+
+## Cleanup
+
+Running simulations generates temporary files (`work/`, `transcript`, `vsim.wlf`, `*.vcd`). To remove them from all testbenches, run from the `UART/` directory:
+
+```powershell
+.\clean.bat
+```
