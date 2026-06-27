@@ -1,11 +1,5 @@
 # UART Verification and Simulation Guide
 
-> [!IMPORTANT]
-> **Strict Folder Separation:**
-> There are 3 main folders in this repository: [UART_RX](./UART_RX), [UART_TX](./UART_TX), and [UART_TOP](./UART_TOP). Each folder is completely separated from the others. Any edits made within a folder are fully self-contained and will not affect the other folders.
-
----
-
 ## Directory Overview
 
 ```
