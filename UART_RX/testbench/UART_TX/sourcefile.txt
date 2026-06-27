@@ -1,0 +1,6 @@
+.//UART_TX//UART_TX_FSM.v
+.//UART_TX//UART_TX_MUX.v
+.//UART_TX//UART_TX_parity_calc.v
+.//UART_TX//UART_TX_P_DATA_REG.v
+.//UART_TX//UART_TX_serializer.v
+.//UART_TX//UART_TX_top.v

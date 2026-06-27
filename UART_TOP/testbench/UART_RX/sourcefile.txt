@@ -1,0 +1,8 @@
+.//UART_RX//UART_RX_data_sampling.v
+.//UART_RX//UART_RX_deserializer.v
+.//UART_RX//UART_RX_edge_bit_counter.v
+.//UART_RX//UART_RX_FSM.v
+.//UART_RX//UART_RX_parity_check.v
+.//UART_RX//UART_RX_start_check.v
+.//UART_RX//UART_RX_stop_check.v
+.//UART_RX//UART_RX_top.v
