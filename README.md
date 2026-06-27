@@ -39,6 +39,7 @@ This is a plain-text list of every `.v` / `.sv` file that needs to be compiled f
 - A filename with no path prefix means the file sits directly inside the `testbench/` folder (i.e., the testbench file itself).
 
 **Example — `UART_TX/testbench/sourcefile.txt`:**
+
 ```
 ../UART_TX_FSM.v          ← RTL file from UART_TX/
 ../UART_TX_MUX.v
@@ -50,6 +51,7 @@ UART_TX_tb.sv             ← Testbench file (lives here in testbench/)
 ```
 
 **Example — `UART_RX/testbench/sourcefile.txt`:**
+
 ```
 ../UART_RX_data_sampling.v       ← RX RTL files from UART_RX/
 ../UART_RX_deserializer.v
@@ -84,13 +86,13 @@ do    wave.do                         ← Set up the waveform viewer
 run   -all                            ← Run the simulation to completion
 ```
 
-| Line | What it does |
-|------|-------------|
-| `vlib work` | Creates (or resets) the `work` compilation library |
-| `vlog -f sourcefile.txt` | Compiles every file listed in `sourcefile.txt` into `work` |
+| Line                                 | What it does                                               |
+| ------------------------------------ | ---------------------------------------------------------- |
+| `vlib work`                          | Creates (or resets) the `work` compilation library         |
+| `vlog -f sourcefile.txt`             | Compiles every file listed in `sourcefile.txt` into `work` |
 | `vsim -voptargs=+acc work.<tb_name>` | Loads the compiled testbench top module into the simulator |
-| `do wave.do` | Applies the pre-configured waveform layout |
-| `run -all` | Starts the simulation and runs until it finishes |
+| `do wave.do`                         | Applies the pre-configured waveform layout                 |
+| `run -all`                           | Starts the simulation and runs until it finishes           |
 
 You never need to modify `run.do`. It is identical across all three testbenches — only the top module name (`UART_TX_tb`, `UART_RX_tb`, `UART_tb`) differs.
 
@@ -105,16 +107,19 @@ You never need to modify `run.do`. It is identical across all three testbenches 
 Open QuestaSim, then paste into the **Transcript** window:
 
 **UART TX:**
+
 ```tcl
 cd ./UART_TX/testbench; do run.do; cd ../../
 ```
 
 **UART RX:**
+
 ```tcl
 cd ./UART_RX/testbench; do run.do; cd ../../
 ```
 
 **UART TOP:**
+
 ```tcl
 cd ./UART_TOP/testbench; do run.do; cd ../../
 ```
