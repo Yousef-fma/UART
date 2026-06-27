@@ -106,17 +106,17 @@ Open QuestaSim, then paste into the **Transcript** window:
 
 **UART TX:**
 ```tcl
-cd ./UART_TX/testbench; do run.do
+cd ./UART_TX/testbench; do run.do; cd ../../
 ```
 
 **UART RX:**
 ```tcl
-cd ./UART_RX/testbench; do run.do
+cd ./UART_RX/testbench; do run.do; cd ../../
 ```
 
 **UART TOP:**
 ```tcl
-cd ./UART_TOP/testbench; do run.do
+cd ./UART_TOP/testbench; do run.do; cd ../../
 ```
 
 ---
