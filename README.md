@@ -5,7 +5,7 @@
 ```
 UART/
 ├── UART_TX/               ← RTL source files for the Transmitter
-│   ├── testbench/         ← TX testbench (UART_TX_tb.sv, run.do, sourcefile.txt, wave.do)
+│   ├── testbench/         ← TX testbenches (Full verification: UART_TX_tb.sv, run.do, wave.do; Simple waveform demo: UART_TX_tb2.sv, run2.do, wave2.do)
 │   └── *.v
 ├── UART_RX/               ← RTL source files for the Receiver
 │   ├── testbench/         ← RX testbench (UART_RX_tb.sv, run.do, sourcefile.txt, wave.do)
@@ -100,10 +100,20 @@ You never need to modify `run.do`. It is identical across all three testbenches 
 
 Open QuestaSim, then paste into the **Transcript** window:
 
-**UART TX:**
+**UART TX (Full Verification):**
 
 ```tcl
 cd ./UART_TX/testbench; do run.do
+
+# See the waveform. then you can quit the simulation by using `quit -sim`
+# after you quit the simulation you can return to the main directory by using `cd ../../`
+quit -sim; cd ../../; pwd
+```
+
+**UART TX (Simple Demonstration):**
+
+```tcl
+cd ./UART_TX/testbench; do run2.do
 
 # See the waveform. then you can quit the simulation by using `quit -sim`
 # after you quit the simulation you can return to the main directory by using `cd ../../`
@@ -135,8 +145,11 @@ quit -sim; cd ../../; pwd
 ### Terminal — GUI Mode
 
 ```powershell
-# TX
+# TX (Full Verification)
 cd ./UART_TX/testbench; vsim -do run.do; cd ../../
+
+# TX (Simple Demonstration)
+cd ./UART_TX/testbench; vsim -do run2.do; cd ../../
 
 # RX
 cd ./UART_RX/testbench; vsim -do run.do; cd ../../
@@ -148,8 +161,11 @@ cd ./UART_TOP/testbench; vsim -do run.do; cd ../../
 ### Terminal — Batch Mode (No GUI)
 
 ```powershell
-# TX
+# TX (Full Verification)
 cd ./UART_TX/testbench; vsim -c -do run.do; cd ../../
+
+# TX (Simple Demonstration)
+cd ./UART_TX/testbench; vsim -c -do run2.do; cd ../../
 
 # RX
 cd ./UART_RX/testbench; vsim -c -do run.do; cd ../../
