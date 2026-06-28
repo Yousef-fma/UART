@@ -103,19 +103,31 @@ Open QuestaSim, then paste into the **Transcript** window:
 **UART TX:**
 
 ```tcl
-cd ./UART_TX/testbench; do run.do; cd ../../
+cd ./UART_TX/testbench; do run.do
+
+# See the waveform. then you can quit the simulation by using `quit -sim`
+# after you quit the simulation you can return to the main directory by using `cd ../../`
+quit -sim; cd ../../; pwd
 ```
 
 **UART RX:**
 
 ```tcl
-cd ./UART_RX/testbench; do run.do; cd ../../
+cd ./UART_RX/testbench; do run.do
+
+# See the waveform. then you can quit the simulation by using `quit -sim`
+# after you quit the simulation you can return to the main directory by using `cd ../../`
+quit -sim; cd ../../; pwd
 ```
 
 **UART TOP:**
 
 ```tcl
-cd ./UART_TOP/testbench; do run.do; cd ../../
+cd ./UART_TOP/testbench; do run.do
+
+# See the waveform. then you can quit the simulation by using `quit -sim`
+# after you quit the simulation you can return to the main directory by using `cd ../../`
+quit -sim; cd ../../; pwd
 ```
 
 ---
@@ -144,6 +156,12 @@ cd ./UART_RX/testbench; vsim -c -do run.do; cd ../../
 
 # TOP
 cd ./UART_TOP/testbench; vsim -c -do run.do; cd ../../
+```
+
+# After you run the simulation from the Terminal, You have to close the vsim window manually to be able to use the terminal again. run this line after each simulation done by the terminal:
+
+```tcl
+quit
 ```
 
 ---
